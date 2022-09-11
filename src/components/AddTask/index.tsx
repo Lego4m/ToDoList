@@ -5,8 +5,19 @@ import { AntDesign } from '@expo/vector-icons'
 
 import { styles } from './styles';
 
-export function AddTask() {
+interface AddTaskProps {
+  onAddTask: (taskText: string) => void;
+}
+
+export function AddTask({ onAddTask }: AddTaskProps) {
   const [isFocused, setIsFocused] = useState(false);
+
+  const [taskText, setTaskText] = useState('');
+
+  function handleNewTask() {
+    onAddTask(taskText);
+    setTaskText('');
+  }
 
   return (
     <View style={styles.container}>
@@ -21,12 +32,14 @@ export function AddTask() {
         ]}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        value={taskText}
+        onChangeText={setTaskText}
       />
 
       <TouchableHighlight
         style={styles.button}
         underlayColor='#4EA8DE'
-        onPress={() => {}}
+        onPress={handleNewTask}
       >
         <AntDesign name='pluscircleo' size={16} color='#f2f2f2' />
       </TouchableHighlight>

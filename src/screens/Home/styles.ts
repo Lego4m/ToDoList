@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tasksContainer: {
+    flex: 1,
     paddingHorizontal: 24,
   },
   tasksInformationsContainer: {

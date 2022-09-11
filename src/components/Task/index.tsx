@@ -5,12 +5,19 @@ import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 
 import { styles } from './styles';
 
-interface TaskProps {
-  completed: boolean;
-  task: string;
+type Task = {
+  id: number,
+  task: string,
+  completed: boolean,
 }
 
-export function Task({ completed, task }: TaskProps) {
+interface TaskProps {
+  task: Task;
+  onToggle: (id: number) => void;
+  onDeleteTask: (id: number) => void;
+}
+
+export function Task({ task, onToggle, onDeleteTask }: TaskProps) {
   const [inCheckHighlight, setInCheckHighlight] = useState(false);
   const [inDanger, setInDanger] = useState(false);
 
@@ -18,20 +25,20 @@ export function Task({ completed, task }: TaskProps) {
     <View 
       style={[
         styles.container,
-        completed ? 
+        task.completed ? 
           ({ borderColor: '#262626' }) : 
           ({ borderColor: '#333333' })
       ]}
     >
       <TouchableHighlight
         style={styles.checkButton}
-        onPress={() => {}}
         underlayColor='transparent'
+        onPress={() => onToggle(task.id)}
         onShowUnderlay={() => setInCheckHighlight(true)}
         onHideUnderlay={() => setInCheckHighlight(false)}
       >
         {
-          completed ? (
+          task.completed ? (
             <MaterialCommunityIcons 
               name='checkbox-marked-circle' 
               size={24} 
@@ -51,7 +58,7 @@ export function Task({ completed, task }: TaskProps) {
       <Text 
         style={[
           styles.text,
-          completed ? ({
+          task.completed ? ({
             color: '#808080',
             textDecorationLine: 'line-through'
           }) : ({
@@ -59,13 +66,13 @@ export function Task({ completed, task }: TaskProps) {
           })
         ]}
       >
-        {task}
+        {task.task}
       </Text>
 
       <TouchableHighlight
         style={styles.trashButton}
         underlayColor='#333333'
-        onPress={() => {}}
+        onPress={() => onDeleteTask(task.id)}
         onShowUnderlay={() => setInDanger(true)}
         onHideUnderlay={() => setInDanger(false)}
       >

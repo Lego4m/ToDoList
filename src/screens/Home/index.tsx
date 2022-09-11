@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 
 import { Task } from '../../components/Task';
@@ -9,20 +10,45 @@ import { AddTask } from '../../components/AddTask';
 import Logo from '../../assets/Logo.svg';
 import Clipboard from '../../assets/Clipboard.svg';
 
-const tasks: { id: number, task: string, completed: boolean }[] = [
-  {
-    id: 0,
-    completed: false,
-    task: 'Codar',
-  },
-  {
-    id: 1,
-    completed: true,
-    task: 'Estudar',
-  },
-]
+type Task = {
+  id: number,
+  task: string,
+  completed: boolean,
+}
 
 export function Home() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  const completedTasks = tasks.reduce((acc, task) => {
+    return task.completed ? acc + 1 : acc;
+  }, 0);
+
+  function handleAddTask(taskText: string) {
+    const task = {
+      id: (tasks[tasks.length - 1]?.id ?? -1) + 1,
+      task: taskText,
+      completed: false,
+    }
+
+    setTasks([...tasks, task]);
+  }
+
+  function handleToggleTask(id: number) {
+    const newTasks = tasks.map((task) =>
+      task.id === id ?
+        ({ ...task, completed: !task.completed }) :
+        task
+    );
+
+    setTasks(newTasks);
+  }
+
+  function handleDeleteTask(id: number) {
+    const newTasks = tasks.filter((task) => task.id !== id);
+
+    setTasks(newTasks);
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -30,7 +56,7 @@ export function Home() {
       </View>
 
       <View style={styles.tasksContainer}>
-        <AddTask />
+        <AddTask onAddTask={handleAddTask} />
 
         <View style={styles.tasksInformationsContainer}>
           <View style={styles.infoContainer}>
@@ -39,7 +65,7 @@ export function Home() {
             </Text>
 
             <Text style={styles.infoTextCounter}>
-              0
+              {tasks.length}
             </Text>
           </View>
 
@@ -49,7 +75,7 @@ export function Home() {
             </Text>
 
             <Text style={styles.infoTextCounter}>
-              0
+              {completedTasks}
             </Text>
           </View>
         </View>
@@ -60,7 +86,11 @@ export function Home() {
           data={tasks}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => 
-            <Task completed={item.completed} task={item.task} />
+            <Task 
+              task={item} 
+              onToggle={handleToggleTask} 
+              onDeleteTask={handleDeleteTask} 
+            />
           }
           ListEmptyComponent={() => (
             <View style={styles.taskListEmptyContainer}>
